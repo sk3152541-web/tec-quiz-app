@@ -4,8 +4,22 @@ from flask import Flask, render_template_string, request, session
 app = Flask(__name__)
 app.secret_key = "tec_exam_secret_key_123"
 
-# Poore 105+ Bilingual TEC Exam Questions
+# TEC Exam Bilingual Questions List
 quiz_questions = [
+    {
+        "question": (
+            "Which department or portal handles PAN card applications? (PAN"
+            " card applications ko kaun sa department ya portal handle karta"
+            " hai?)"
+        ),
+        "options": [
+            "NSDL and UTIITSL",
+            "Passport Authority",
+            "IRCTC",
+            "UIDAI",
+        ],
+        "answer_text": "NSDL and UTIITSL",
+    },
     {
         "question": "What is the full form of CSC? (CSC ka pura naam kya hai?)",
         "options": [
@@ -22,8 +36,8 @@ quiz_questions = [
             " registration ke liye kaun sa course karna padta hai?)"
         ),
         "options": [
-            "Tally Course",
             "TEC (Telecentre Entrepreneur Course)",
+            "Tally Course",
             "Basic Computer Course",
             "Digital Marketing",
         ],
@@ -47,13 +61,16 @@ quiz_questions = [
             "What is the official website to register for CSC? (CSC ke liye"
             " register karne ki official website kaun si hai?)"
         ),
-        "options": [
-            "csc.gov.in",
-            "irctc.co.in",
-            "uidai.gov.in",
-            "nsdl.com",
-        ],
+        "options": ["csc.gov.in", "irctc.co.in", "uidai.gov.in", "nsdl.com"],
         "answer_text": "csc.gov.in",
+    },
+    {
+        "question": (
+            "What is the minimum age requirement to register for a CSC? (CSC"
+            " ke liye register karne ki minimum age limit kya hai?)"
+        ),
+        "options": ["18 Years", "15 Years", "21 Years", "25 Years"],
+        "answer_text": "18 Years",
     },
     {
         "question": (
@@ -111,41 +128,21 @@ quiz_questions = [
             "Ministry of Electronics and Information Technology (MeitY)"
         ),
     },
-    {
-        "question": "What is the full form of MeitY? (MeitY ka pura naam kya hai?)",
-        "options": [
-            "Ministry of Electronics and Information Technology",
-            "Maximum Energy in Technology",
-            "Management and Educational IT",
-            "Mechanical Engineering in Technology",
-        ],
-        "answer_text": "Ministry of Electronics and Information Technology",
-    },
-    {
-        "question": (
-            "What is the minimum age requirement to register for a CSC? (CSC"
-            " ke liye register karne ki minimum age limit kya hai?)"
-        ),
-        "options": ["18 Years", "15 Years", "21 Years", "25 Years"],
-        "answer_text": "18 Years",
-    },
-    # (Baaki ke remaining questions bhi aap ishi list mein aage add kar sakte hain - total 105+)
 ]
 
-# HTML Template (Website Design with Bootstrap & Mobile Friendly)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEC Exam Practice Dashboard</title>
+    <title>TEC Exam Dashboard - Dual Shuffle</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <div class="container mt-5" style="max-width: 700px;">
+    <div class="container mt-4" style="max-width: 750px;">
         <div class="card shadow p-4">
-            <h3 class="text-center mb-4 text-primary">TEC Exam Practice Dashboard</h3>
+            <h4 class="text-center mb-3 text-primary">TEC Exam Practice Dashboard</h4>
             
             {% if current_idx < total_qs %}
                 <div class="mb-3">
@@ -170,9 +167,11 @@ HTML_TEMPLATE = """
                     </div>
 
                     <div class="d-flex justify-content-between flex-wrap gap-2">
-                        <button type="submit" name="action" value="submit" class="btn btn-success flex-grow-1">Submit Answer</button>
-                        <button type="submit" name="action" value="shuffle_qs" class="btn btn-primary">Shuffle Qs</button>
-                        <button type="submit" name="action" value="restart" class="btn btn-danger">Restart</button>
+                        <button type="submit" name="action" value="back" class="btn btn-warning text-white"> &lt;&lt; Back </button>
+                        <button type="submit" name="action" value="submit" class="btn btn-success"> Submit </button>
+                        <button type="submit" name="action" value="shuffle_qs" class="btn btn-primary"> Shuffle Qs </button>
+                        <button type="submit" name="action" value="shuffle_opts" class="btn btn-secondary" style="background-color: #6f42c1; border-color: #6f42c1;"> Shuffle Options </button>
+                        <button type="submit" name="action" value="restart" class="btn btn-danger"> Restart </button>
                     </div>
                 </form>
             {% else %}
@@ -202,6 +201,7 @@ def init_quiz():
     correct_idx = opts.index(correct_text)
     shuffled_data.append({
         "question": q["question"],
+        "options": q["options"],
         "shuffled_opts": opts,
         "correct_index": correct_idx,
     })
@@ -219,25 +219,38 @@ def index():
 
   message = session.get("message", "")
   alert_type = session.get("alert_type", "")
-  # Clear message after loading once
   session["message"] = ""
 
   if request.method == "POST":
     action = request.form.get("action")
 
-    if action == "restart" or action == "shuffle_qs":
+    if action == "restart":
       init_quiz()
-      return render_template_string(
-          HTML_TEMPLATE,
-          current_idx=session["current_idx"],
-          total_qs=len(session["quiz_data"]),
-          q_data=session["quiz_data"][session["current_idx"]],
-          score=session["score"],
-          message="Questions naye sire se shuffle ho gaye hain!"
-          if action == "shuffle_qs"
-          else "",
-          alert_type="alert-info",
-      )
+
+    elif action == "shuffle_qs":
+      temp_q = list(session["quiz_data"])
+      random.shuffle(temp_q)
+      session["quiz_data"] = temp_q
+      session["current_idx"] = 0
+      session["message"] = "Questions naye sire se shuffle ho gaye hain!"
+      session["alert_type"] = "alert-info"
+
+    elif action == "shuffle_opts":
+      current_idx = session["current_idx"]
+      if current_idx < len(session["quiz_data"]):
+        q_item = session["quiz_data"][current_idx]
+        opts = list(q_item["options"])
+        correct_text = q_item["shuffled_opts"][q_item["correct_index"]]
+        random.shuffle(opts)
+        correct_idx = opts.index(correct_text)
+        q_item["shuffled_opts"] = opts
+        q_item["correct_index"] = correct_idx
+        session["message"] = "Options shuffle ho gayi hain!"
+        session["alert_type"] = "alert-secondary"
+
+    elif action == "back":
+      if session["current_idx"] > 0:
+        session["current_idx"] -= 1
 
     elif action == "submit":
       selected = int(request.form.get("user_answer", -1))
@@ -261,7 +274,6 @@ def index():
   current_idx = session.get("current_idx", 0)
   quiz_data = session.get("quiz_data", [])
   total_qs = len(quiz_data)
-
   q_data = quiz_data[current_idx] if current_idx < total_qs else None
 
   return render_template_string(
