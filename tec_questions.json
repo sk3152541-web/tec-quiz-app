@@ -1,0 +1,248 @@
+{
+    "modules": [
+        {
+            "module_id": 1,
+            "module_name": "Digital Literacy & Computer Basics",
+            "questions": [
+                {
+                    "question": "What is the function of an Antivirus software? (Antivirus software ka kya kaam hota hai?)",
+                    "options": [
+                        "To print documents faster",
+                        "To charge laptop batteries",
+                        "To increase internet speed",
+                        "To detect and remove malicious software/viruses"
+                    ],
+                    "answer_text": "To detect and remove malicious software/viruses"
+                },
+                {
+                    "question": "Which shortcut key is used to copy text? (Text copy karne ke liye kaun si shortcut key use hoti hai?)",
+                    "options": [
+                        "Ctrl + V",
+                        "Ctrl + C",
+                        "Ctrl + X",
+                        "Ctrl + P"
+                    ],
+                    "answer_text": "Ctrl + C"
+                },
+                {
+                    "question": "Which shortcut key is used to paste copied text? (Copy kiye hue text ko paste karne ke liye kaun si shortcut key use hoti hai?)",
+                    "options": [
+                        "Ctrl + V",
+                        "Ctrl + C",
+                        "Ctrl + X",
+                        "Ctrl + P"
+                    ],
+                    "answer_text": "Ctrl + V"
+                },
+                {
+                    "question": "What is MS Excel primarily used for? (MS Excel ka mukhya upyog kis liye hota hai?)",
+                    "options": [
+                        "Spreadsheets and calculations",
+                        "Video editing",
+                        "Playing 3D games",
+                        "Sending emails"
+                    ],
+                    "answer_text": "Spreadsheets and calculations"
+                },
+                {
+                    "question": "What is the full form of RAM? (RAM ka pura naam kya hai?)",
+                    "options": [
+                        "Random Access Memory",
+                        "Readily Available Machine",
+                        "Run Active Module",
+                        "Remote Access Management"
+                    ],
+                    "answer_text": "Random Access Memory"
+                },
+                {
+                    "question": "What is the full form of ROM? (ROM ka pura naam kya hai?)",
+                    "options": [
+                        "Read Only Memory",
+                        "Random Output Module",
+                        "Rapid Online Media",
+                        "Real Operation Memory"
+                    ],
+                    "answer_text": "Read Only Memory"
+                },
+                {
+                    "question": "Which device is used to input data into a computer? (Computer mein data input karne ke liye kis device ka use hota hai?)",
+                    "options": [
+                        "Keyboard and Mouse",
+                        "Monitor",
+                        "Printer",
+                        "Speakers"
+                    ],
+                    "answer_text": "Keyboard and Mouse"
+                },
+                {
+                    "question": "What is an Operating System? (Operating System kya hota hai?)",
+                    "options": [
+                        "System software that manages computer hardware and software resources",
+                        "A type of computer game",
+                        "An external printer device",
+                        "A web browser application"
+                    ],
+                    "answer_text": "System software that manages computer hardware and software resources"
+                }
+            ]
+        },
+        {
+            "module_id": 2,
+            "module_name": "CSC Services & Digital Schemes",
+            "questions": [
+                {
+                    "question": "What is the full form of CSC? (CSC ka pura naam kya hai?)",
+                    "options": [
+                        "Common Service Centre",
+                        "Computer Service Center",
+                        "Central System Council",
+                        "Common Sector Company"
+                    ],
+                    "answer_text": "Common Service Centre"
+                },
+                {
+                    "question": "Which department or portal handles PAN card applications? (PAN card applications ko kaun sa department ya portal handle karta hai?)",
+                    "options": [
+                        "NSDL and UTIITSL",
+                        "Passport Authority",
+                        "IRCTC",
+                        "UIDAI"
+                    ],
+                    "answer_text": "NSDL and UTIITSL"
+                },
+                {
+                    "question": "What is the full form of PMGDISHA? (PMGDISHA ka pura naam kya hai?)",
+                    "options": [
+                        "Pradhan Mantri Gramin Digital Saksharta Abhiyan",
+                        "Prime Minister Good Digital Scheme",
+                        "Pradhan Mantri Government Digital Share Agency",
+                        "Public Digital Saksharta Abhiyan"
+                    ],
+                    "answer_text": "Pradhan Mantri Gramin Digital Saksharta Abhiyan"
+                },
+                {
+                    "question": "What is CSC DigiPay used for? (CSC DigiPay ka istemal kis ke liye hota hai?)",
+                    "options": [
+                        "Aadhaar enabled payment system / Cash withdrawal and banking",
+                        "Playing online video games",
+                        "Sending emails",
+                        "Editing photos"
+                    ],
+                    "answer_text": "Aadhaar enabled payment system / Cash withdrawal and banking"
+                },
+                {
+                    "question": "What service is provided under FASTag? (FASTag ke antargat kya suvidha milti hai?)",
+                    "options": [
+                        "Electronic toll collection on highways",
+                        "Fast train booking",
+                        "Fast internet connection",
+                        "Courier delivery service"
+                    ],
+                    "answer_text": "Electronic toll collection on highways"
+                },
+                {
+                    "question": "What is the full form of IRCTC? (IRCTC ka pura naam kya hai?)",
+                    "options": [
+                        "Indian Railway Catering and Tourism Corporation",
+                        "Indian Road and Rail Transit Company",
+                        "International Rail Cargo and Transporting Central",
+                        "Indian Route Control and Ticketing Council"
+                    ],
+                    "answer_text": "Indian Railway Catering and Tourism Corporation"
+                },
+                {
+                    "question": "Which scheme provides insurance to farmers? (Farmers ke liye kaun si insurance scheme hai?)",
+                    "options": [
+                        "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+                        "Pradhan Mantri Awas Yojana",
+                        "Ayushman Bharat",
+                        "Ujjwala Yojana"
+                    ],
+                    "answer_text": "Pradhan Mantri Fasal Bima Yojana (PMFBY)"
+                }
+            ]
+        },
+        {
+            "module_id": 3,
+            "module_name": "Financial Literacy & Banking Services",
+            "questions": [
+                {
+                    "question": "What is the health coverage limit under Ayushman Bharat (PM-JAY) per family per year? (Ayushman Bharat ke tahat kitna health cover milta hai?)",
+                    "options": [
+                        "Up to Rs. 5 Lakhs",
+                        "Up to Rs. 1 Lakh",
+                        "Rs. 50,000",
+                        "No limit"
+                    ],
+                    "answer_text": "Up to Rs. 5 Lakhs"
+                },
+                {
+                    "question": "What type of insurance is provided under PMSBY? (PMSBY ke tahat kis tarah ka insurance milta hai?)",
+                    "options": [
+                        "Accident Insurance (Durghatna Bima)",
+                        "Fire Insurance",
+                        "Crop Insurance",
+                        "Vehicle Insurance"
+                    ],
+                    "answer_text": "Accident Insurance (Durghatna Bima)"
+                },
+                {
+                    "question": "What is the full form of APY? (APY ka pura naam kya hai?)",
+                    "options": [
+                        "Atal Pension Yojana",
+                        "Aadhaar Payment Yantra",
+                        "All India Provident Yojana",
+                        "Atal Provident Yield"
+                    ],
+                    "answer_text": "Atal Pension Yojana"
+                },
+                {
+                    "question": "What is the full form of PMJDY? (PMJDY ka pura naam kya hai?)",
+                    "options": [
+                        "Pradhan Mantri Jan Dhan Yojana",
+                        "Pradhan Mantri Jeevan Jyoti Yojana",
+                        "Pradhan Mantri Jila Development Yojana",
+                        "Public Money Jan Dhan Yantra"
+                    ],
+                    "answer_text": "Pradhan Mantri Jan Dhan Yojana"
+                }
+            ]
+        },
+        {
+            "module_id": 4,
+            "module_name": "Entrepreneurship & Business Management",
+            "questions": [
+                {
+                    "question": "What is Working Capital? (Working Capital kya hoti hai?)",
+                    "options": [
+                        "Funds required for day-to-day operations of a business",
+                        "Money kept in a locked safe forever",
+                        "Profit earned after 10 years",
+                        "Personal money spent on vacations"
+                    ],
+                    "answer_text": "Funds required for day-to-day operations of a business"
+                },
+                {
+                    "question": "When was GST introduced in India? (India mein GST kab lagu kiya gaya tha?)",
+                    "options": [
+                        "1st July 2017",
+                        "1st January 2020",
+                        "15th August 1947",
+                        "26th January 2019"
+                    ],
+                    "answer_text": "1st July 2017"
+                },
+                {
+                    "question": "What is the full form of MSME? (MSME ka pura naam kya hai?)",
+                    "options": [
+                        "Micro, Small and Medium Enterprises",
+                        "Maximum System Management Economy",
+                        "Ministry of Sales and Market Exchange",
+                        "Medium Sector Manufacturing Enterprise"
+                    ],
+                    "answer_text": "Micro, Small and Medium Enterprises"
+                }
+            ]
+        }
+    ]
+}
