@@ -30,9 +30,9 @@ HTML_TEMPLATE = """
             
             {% if view == 'home' %}
                 <p class="text-center text-muted mb-4">Apna practice module select karein:</p>
-                <div class="list-group">
+                <div class="d-grid gap-3">
                     {% for mod in modules_list %}
-                        <a href="/start_module/{{ mod.module_id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 mb-2 rounded border">
+                        <a href="/start_module/{{ mod.module_id }}" class="btn btn-outline-primary p-3 d-flex justify-content-between align-items-center text-start shadow-sm" style="text-decoration: none; border-width: 2px;">
                             <span class="fs-5 fw-semibold text-dark">{{ mod.module_id }}. {{ mod.module_name }}</span>
                             <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">{{ mod.q_count }} Questions</span>
                         </a>
