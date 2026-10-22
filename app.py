@@ -30,14 +30,16 @@ HTML_TEMPLATE = """
             
             {% if view == 'home' %}
                 <p class="text-center text-muted mb-4">Apna practice module select karein:</p>
-                <div class="d-grid gap-3">
-                    {% for mod in modules_list %}
-                        <a href="/start_module/{{ mod.module_id }}" class="btn btn-outline-primary p-3 d-flex justify-content-between align-items-center text-start shadow-sm" style="text-decoration: none; border-width: 2px;">
-                            <span class="fs-5 fw-semibold text-dark">{{ mod.module_id }}. {{ mod.module_name }}</span>
-                            <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">{{ mod.q_count }} Questions</span>
-                        </a>
-                    {% endfor %}
-                </div>
+                <form method="POST" action="/start_module">
+                    <div class="d-grid gap-3">
+                        {% for mod in modules_list %}
+                            <button type="submit" name="mod_id" value="{{ mod.module_id }}" class="btn btn-outline-primary p-3 d-flex justify-content-between align-items-center text-start shadow-sm" style="border-width: 2px;">
+                                <span class="fs-5 fw-semibold text-dark">{{ mod.module_id }}. {{ mod.module_name }}</span>
+                                <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">{{ mod.q_count }} Questions</span>
+                            </button>
+                        {% endfor %}
+                    </div>
+                </form>
             {% elif view == 'quiz' %}
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <span class="badge bg-info text-dark fs-6">📂 Section: {{ module_name }}</span>
@@ -106,8 +108,9 @@ def home():
         })
     return render_template_string(HTML_TEMPLATE, view="home", modules_list=modules_list)
 
-@app.route("/start_module/<int:mod_id>")
-def start_module(mod_id):
+@app.route("/start_module", methods=["POST"])
+def start_module_post():
+    mod_id = int(request.form.get("mod_id"))
     data = load_json_data()
     selected_mod = None
     for mod in data.get("modules", []):
