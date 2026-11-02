@@ -4,15 +4,22 @@ import random
 from flask import Flask, render_template_string, request, session, redirect
 
 app = Flask(__name__)
-app.secret_key = "tec_exam_secret_key_sections_fixed"
+app.secret_key = "tec_exam_secret_key_optimized"
 
 JSON_FILE_PATH = "tec_questions.json"
 
 def load_json_data():
     if not os.path.exists(JSON_FILE_PATH):
         return {"modules": []}
-    with open(JSON_FILE_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(JSON_FILE_PATH, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                return {"modules": []}
+            return json.loads(content)
+    except json.JSONDecodeError:
+        print("Error: tec_questions.json file mein JSON format ki koi galti hai!")
+        return {"modules": []}
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -30,16 +37,17 @@ HTML_TEMPLATE = """
             
             {% if view == 'home' %}
                 <p class="text-center text-muted mb-4">Apna practice module select karein:</p>
-                <form method="POST" action="/start_module">
-                    <div class="d-grid gap-3">
-                        {% for mod in modules_list %}
-                            <button type="submit" name="mod_id" value="{{ mod.module_id }}" class="btn btn-outline-primary p-3 d-flex justify-content-between align-items-center text-start shadow-sm" style="border-width: 2px;">
+                <div class="d-grid gap-3">
+                    {% for mod in modules_list %}
+                        <form method="POST" action="/start_module" class="d-grid">
+                            <input type="hidden" name="mod_id" value="{{ mod.module_id }}">
+                            <button type="submit" class="btn btn-outline-primary p-3 d-flex justify-content-between align-items-center text-start shadow-sm w-100" style="border-width: 2px;">
                                 <span class="fs-5 fw-semibold text-dark">{{ mod.module_id }}. {{ mod.module_name }}</span>
                                 <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">{{ mod.q_count }} Questions</span>
                             </button>
-                        {% endfor %}
-                    </div>
-                </form>
+                        </form>
+                    {% endfor %}
+                </div>
             {% elif view == 'quiz' %}
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <span class="badge bg-info text-dark fs-6">📂 Section: {{ module_name }}</span>
@@ -60,9 +68,9 @@ HTML_TEMPLATE = """
 
                     <form method="POST">
                         <div class="list-group mb-4">
-                            {% for opt in q_data.shuffled_opts %}
+                            {% for opt in q_data.options %}
                                 <label class="list-group-item">
-                                    <input class="form-check-input me-2" type="radio" name="user_answer" value="{{ loop.index0 }}" required>
+                                    <input class="form-check-input me-2" type="radio" name="user_answer" value="{{ opt }}" {% if answered %}disabled{% endif %} {% if user_selected == opt %}checked{% endif %} required>
                                     {{ opt }}
                                 </label>
                             {% endfor %}
@@ -70,9 +78,14 @@ HTML_TEMPLATE = """
 
                         <div class="d-flex justify-content-between flex-wrap gap-2">
                             <button type="submit" name="action" value="back" class="btn btn-warning text-white"> &lt;&lt; Back </button>
-                            <button type="submit" name="action" value="submit" class="btn btn-success"> Submit </button>
-                            <button type="submit" name="action" value="shuffle_qs" class="btn btn-primary"> Shuffle Qs </button>
-                            <button type="submit" name="action" value="shuffle_opts" class="btn btn-secondary" style="background-color: #6f42c1; border-color: #6f42c1;"> Shuffle Options </button>
+                            
+                            {% if not answered %}
+                                <button type="submit" name="action" value="submit" class="btn btn-success"> Submit Answer </button>
+                            {% else %}
+                                <button type="submit" name="action" value="next" class="btn btn-primary"> Next Question &gt;&gt; </button>
+                            {% endif %}
+
+                            <button type="submit" name="action" value="shuffle_qs" class="btn btn-secondary"> Shuffle Qs </button>
                             <button type="submit" name="action" value="restart" class="btn btn-danger"> Restart </button>
                         </div>
                     </form>
@@ -97,7 +110,7 @@ HTML_TEMPLATE = """
 
 @app.route("/home")
 def home():
-    session["current_module_id"] = None
+    session.clear()
     data = load_json_data()
     modules_list = []
     for mod in data.get("modules", []):
@@ -125,26 +138,18 @@ def start_module_post():
     indices = list(range(len(raw_qs)))
     random.shuffle(indices)
     
-    quiz_meta = []
-    for idx in indices:
-        q = raw_qs[idx]
-        opts = list(q["options"])
-        correct_text = q["answer_text"]
-        random.shuffle(opts)
-        correct_idx = opts.index(correct_text)
-        quiz_meta.append({
-            "orig_idx": idx,
-            "shuffled_opts": opts,
-            "correct_index": correct_idx
-        })
-        
+    session.clear()
     session["current_module_id"] = mod_id
     session["module_name"] = selected_mod.get("module_name")
-    session["quiz_indices"] = quiz_meta
+    session["q_indices"] = indices
     session["current_idx"] = 0
     session["score"] = 0
     session["message"] = ""
     session["alert_type"] = ""
+    session["answered"] = False
+    session["user_selected"] = None
+    session["shuffled_options_cache"] = {}
+    session.modified = True
     
     return redirect("/")
 
@@ -166,89 +171,87 @@ def index():
         return redirect("/home")
         
     raw_qs = selected_mod.get("questions", [])
+    q_indices = session.get("q_indices", [])
+    total_qs = len(q_indices)
+    current_idx = session.get("current_idx", 0)
     
     if request.method == "POST":
         action = request.form.get("action")
         
         if action == "restart":
-            indices = list(range(len(raw_qs)))
-            random.shuffle(indices)
-            quiz_meta = []
-            for idx in indices:
-                q = raw_qs[idx]
-                opts = list(q["options"])
-                correct_text = q["answer_text"]
-                random.shuffle(opts)
-                correct_idx = opts.index(correct_text)
-                quiz_meta.append({
-                    "orig_idx": idx,
-                    "shuffled_opts": opts,
-                    "correct_index": correct_idx
-                })
-            session["quiz_indices"] = quiz_meta
+            random.shuffle(q_indices)
+            session["q_indices"] = q_indices
             session["current_idx"] = 0
             session["score"] = 0
             session["message"] = "Quiz restarted!"
             session["alert_type"] = "alert-info"
+            session["answered"] = False
+            session["user_selected"] = None
+            session["shuffled_options_cache"] = {}
             
         elif action == "shuffle_qs":
-            quiz_meta = list(session["quiz_indices"])
-            random.shuffle(quiz_meta)
-            session["quiz_indices"] = quiz_meta
+            random.shuffle(q_indices)
+            session["q_indices"] = q_indices
             session["current_idx"] = 0
             session["message"] = "Questions shuffle ho gaye hain!"
             session["alert_type"] = "alert-info"
+            session["answered"] = False
+            session["user_selected"] = None
+            session["shuffled_options_cache"] = {}
             
-        elif action == "shuffle_opts":
-            current_idx = session["current_idx"]
-            quiz_meta = session["quiz_indices"]
-            if current_idx < len(quiz_meta):
-                meta = quiz_meta[current_idx]
-                q = raw_qs[meta["orig_idx"]]
-                opts = list(q["options"])
-                correct_text = meta["shuffled_opts"][meta["correct_index"]]
-                random.shuffle(opts)
-                correct_idx = opts.index(correct_text)
-                meta["shuffled_opts"] = opts
-                meta["correct_index"] = correct_idx
-                session["quiz_indices"] = quiz_meta
-                session["message"] = "Options shuffle ho gayi hain!"
-                session["alert_type"] = "alert-secondary"
-                
         elif action == "back":
-            if session["current_idx"] > 0:
+            if current_idx > 0:
                 session["current_idx"] -= 1
+                session["message"] = ""
+                session["answered"] = False
+                session["user_selected"] = None
                 
         elif action == "submit":
-            selected = int(request.form.get("user_answer", -1))
-            current_idx = session["current_idx"]
-            quiz_meta = session["quiz_indices"]
-            meta = quiz_meta[current_idx]
-            correct_idx = meta["correct_index"]
-            
-            if selected == correct_idx:
-                session["score"] = session.get("score", 0) + 1
-                session["message"] = "Sahi jawab! (Correct)"
-                session["alert_type"] = "alert-success"
-            else:
-                correct_text = meta["shuffled_opts"][correct_idx]
-                session["message"] = f"Ghalat jawab! Sahi jawab yeh tha: {correct_text}"
-                session["alert_type"] = "alert-danger"
-                
+            if not session.get("answered", False):
+                selected_ans = request.form.get("user_answer")
+                session["user_selected"] = selected_ans
+                if current_idx < total_qs:
+                    q_original_idx = q_indices[current_idx]
+                    q = raw_qs[q_original_idx]
+                    correct_ans = q["answer_text"]
+                    
+                    if selected_ans == correct_ans:
+                        session["score"] = session.get("score", 0) + 1
+                        session["message"] = "Sahi jawab! (Correct)"
+                        session["alert_type"] = "alert-success"
+                    else:
+                        session["message"] = f"Ghalat jawab! Sahi jawab yeh tha: {correct_ans}"
+                        session["alert_type"] = "alert-danger"
+                        
+                    session["answered"] = True
+
+        elif action == "next":
             session["current_idx"] += 1
+            session["message"] = ""
+            session["answered"] = False
+            session["user_selected"] = None
+
+        session.modified = True
 
     current_idx = session.get("current_idx", 0)
-    quiz_meta = session.get("quiz_indices", [])
-    total_qs = len(quiz_meta)
-    
     q_data = None
     if current_idx < total_qs:
-        meta = quiz_meta[current_idx]
-        q = raw_qs[meta["orig_idx"]]
+        q_original_idx = q_indices[current_idx]
+        q = raw_qs[q_original_idx]
+        
+        cache = session.get("shuffled_options_cache", {})
+        str_idx = str(current_idx)
+        
+        if str_idx not in cache:
+            opts = list(q["options"])
+            random.shuffle(opts)
+            cache[str_idx] = opts
+            session["shuffled_options_cache"] = cache
+            session.modified = True
+        
         q_data = {
             "question": q["question"],
-            "shuffled_opts": meta["shuffled_opts"],
-            "correct_index": meta["correct_index"]
+            "options": cache[str_idx]
         }
 
     return render_template_string(
@@ -260,7 +263,9 @@ def index():
         q_data=q_data,
         score=session.get("score", 0),
         message=session.get("message", ""),
-        alert_type=session.get("alert_type", "")
+        alert_type=session.get("alert_type", ""),
+        answered=session.get("answered", False),
+        user_selected=session.get("user_selected")
     )
 
 if __name__ == "__main__":
